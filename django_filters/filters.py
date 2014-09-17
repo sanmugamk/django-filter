@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 
 from django import forms
@@ -11,14 +11,14 @@ from django.utils import six
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
-from .fields import RangeField, LookupTypeField, Lookup
+from .fields import RangeField, LookupTypeField, Lookup, DateRangeCompareField
 
 
 __all__ = [
     'Filter', 'CharFilter', 'BooleanFilter', 'ChoiceFilter',
     'MultipleChoiceFilter', 'DateFilter', 'DateTimeFilter', 'TimeFilter',
     'ModelChoiceFilter', 'ModelMultipleChoiceFilter', 'NumberFilter',
-    'RangeFilter', 'DateRangeFilter', 'AllValuesFilter',
+    'RangeFilter', 'DateRangeFilter', 'AllValuesFilter', 'DateRangeCompareFilter',
 ]
 
 
@@ -144,6 +144,20 @@ class RangeFilter(Filter):
         if value:
             lookup = '%s__range' % self.name
             return qs.filter(**{lookup: (value.start, value.stop)})
+        return qs
+
+class DateRangeCompareFilter(Filter):
+    field_class = DateRangeCompareField
+
+    def filter(self, qs, value):
+        if value:
+            lookup = '%s__range' % self.name
+            if value.start and value.stop:
+                return qs.filter(**{lookup: (value.start, value.stop)})
+            elif value.start:
+                return qs.filter(**{lookup: (value.start, now())})
+            else:
+                return qs.filter(**{lookup: (datetime.strptime('1970-01-01', '%Y-%m-%d'), value.stop)})
         return qs
 
 

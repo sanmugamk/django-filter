@@ -22,7 +22,20 @@ class RangeField(forms.MultiValueField):
         if data_list:
             return slice(*data_list)
         return None
+class DateRangeCompareField(forms.MultiValueField):
+    widget = RangeWidget
 
+    def __init__(self, *args, **kwargs):
+        fields = (
+            forms.DateField(),
+            forms.DateField(),
+        )
+        super(DateRangeCompareField, self).__init__(fields, *args, **kwargs)
+
+    def compress(self, data_list):
+        if data_list:
+            return slice(*data_list)
+        return None
 Lookup = namedtuple('Lookup', ('value', 'lookup_type'))
 class LookupTypeField(forms.MultiValueField):
     def __init__(self, field, lookup_choices, *args, **kwargs):
