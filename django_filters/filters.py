@@ -18,7 +18,7 @@ __all__ = [
     'Filter', 'CharFilter', 'BooleanFilter', 'ChoiceFilter',
     'MultipleChoiceFilter', 'DateFilter', 'DateTimeFilter', 'TimeFilter',
     'ModelChoiceFilter', 'ModelMultipleChoiceFilter', 'NumberFilter',
-    'RangeFilter', 'DateRangeFilter', 'AllValuesFilter', 'DateRangeCompareFilter',
+    'RangeFilter', 'DateRangeFilter', 'AllValuesFilter', 'DateRangeCompareFilter', 'CharSearchFilter',
 ]
 
 
@@ -82,6 +82,16 @@ class Filter(object):
 
 class CharFilter(Filter):
     field_class = forms.CharField
+
+
+class CharSearchFilter(Filter):
+    field_class = forms.CharField
+
+    def filter(self, qs, value):
+        if value:
+            data = '%s__icontains' % self.name
+            return qs.filter(**{data: value})
+        return qs
 
 
 class BooleanFilter(Filter):
