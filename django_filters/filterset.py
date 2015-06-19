@@ -7,7 +7,11 @@ from django import forms
 from django.core.validators import EMPTY_VALUES
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
-from django.db.models.related import RelatedObject
+try:
+    from django.db.models.related import RelatedObject
+except:
+    # django 1.8 +
+    from django.db.models.fields.related import ForeignObjectRel as RelatedObject
 from django.utils import six
 from django.utils.text import capfirst
 from django.utils.translation import ugettext as _
